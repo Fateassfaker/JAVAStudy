@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shylock.mapper.AirplaneMapper">
+
+    <resultMap id="myMap" type="Airplane">
+
+        <!--sql语句中表和属性大小写无所谓！！-->
+        <id column="id" property="id"/>
+        <result column="airNo" property="airNo"/>
+        <result column="time" property="time"/>
+        <result column="price" property="price"/>
+
+        <association property="takePort" javaType="Airport">
+            <id column="takePortId" property="id"/>
+            <result column="takePortName" property="portName"/>
+            <result column="takeCityName" property="cityName"/>
+        </association>
+
+        <!--mybatis中同一个表属性只映射一次。。。-->
+        <association property="landPort" javaType="Airport">
+            <id column="LandPortId" property="id"/>
+            <result column="landPortName" property="portName"/>
+            <result column="landCityName" property="cityName"/>
+        </association>
+    </resultMap>
+
+
+    <select id="selByTakeIdLandId" resultMap="myMap">
+        SELECT a.* ,p1.id takePortId, p1.portname takePortName,p1.cityname takeCityName,
+        p2.id LandPortId,p2.portname landPortName,p2.cityname landCityName
+        FROM `airplane` a LEFT JOIN airport p1 ON a.takeid = p1.id LEFT JOIN airport p2 on a.landid = p2.id
+
+        <where>
+          <if test="takeId >0">
+              takeid = #{takeId}
+          </if>
+          <if test="landId >0">
+              and landid = #{landId}
+          </if>
+        </where>
+    </select>
+
+
+</mapper>
